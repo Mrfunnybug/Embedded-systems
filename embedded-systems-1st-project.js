@@ -12,7 +12,7 @@
 var five = require("johnny-five"),
 	arduino = five.Board();
 
-var living_room_light = 0;
+var living_room_light = false;
 
 var photoresistor_pin;
 
@@ -22,20 +22,28 @@ arduino.on("ready", function() {
 	living_room_button = five.Button(2);
 
 	// Pin 3 is used to set living room light, analog input A0 is used to check light intensity from a photoresistor
-	//this.pinMode(13, five.Pin.OUTPUT);
-	//this.pinMode(0, five.Pin.ANALOG);
 	photoresistor_pin = new five.Pin("A0");
-	living_room_light_pin = new five.Pin("13");
+	living_room_light_pin = new five.Pin(13);
 
+	// Check if photoresistor gets less than a half of light available and change living room light if applicable
 	photoresistor_pin.read( function (error, voltage) {
-		if(voltage < 425 && living_room_light == 0) {
-			living_room_light =1;
+		if(voltage < 425 && !living_room_light) {
+			living_room_light = !living_room_light;
 			living_room_light_pin.high();
-		}
-		else if(voltage >= 425 && living_room_light == 1) {
-			living_room_light = 0;
-			living_room_light_pin.low();
+			console.log("Living room on by photoresistor");
 		}
 	});
 
+	// Changes living room light when pushbutton is pushed
+	living_room_button.on("release", function () {
+		living_room_light = !living_room_light;
+		if(living_room_light) {
+			living_room_light_pin.high();
+			console.log("Living room on manually");
+		}
+		else {
+			living_room_light_pin.low();
+			console.log("Living room off manually");
+		}
+	});
 });
