@@ -12,7 +12,11 @@
 var five = require("johnny-five"),
 	arduino = five.Board();
 
-var living_room_light = false;
+var living_room_light = false, other_rooms_light = false;
+
+var living_room_button, other_rooms_light_button;
+
+var living_room_light_pin, other_rooms_light_pin;
 
 var photoresistor_pin;
 
@@ -46,4 +50,22 @@ arduino.on("ready", function() {
 			console.log("Living room off manually");
 		}
 	});
+
+
+	other_rooms_light_button = five.Button(4);
+
+	other_rooms_light_pin = new five.Pin(12);
+	other_rooms_light_button.on("release", function () {
+		other_rooms_light = !other_rooms_light;
+		if(other_rooms_light) {
+			other_rooms_light_pin.high();
+			console.log("Other rooms lights are on");
+		}
+		else {
+			other_rooms_light_pin.low();
+			console.log("Other rooms lights are off");
+		}
+	});
+
+
 });
