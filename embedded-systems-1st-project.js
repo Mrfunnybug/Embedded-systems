@@ -12,17 +12,15 @@
 var five = require("johnny-five"),
 	arduino = five.Board();
 
-var living_room_light = false, other_rooms_light = false, fan = false;
+var living_room_light = false, other_rooms_light = false, fan = false, backyard_light = false;
 
-var living_room_button, other_rooms_light_button;
+var living_room_button, other_rooms_light_button, backyard_light_button;
 
-var living_room_light_pin, other_rooms_light_pin;
+var living_room_light_pin, other_rooms_light_pin, fan_pin, backyard_light_pin;
 
 var photoresistor_pin;
 
 var temperature;
-
-var fan_pin;
 
 arduino.on("ready", function() {
 	
@@ -76,7 +74,7 @@ arduino.on("ready", function() {
 
 	// Temperature will be measured with an LM35 sensor
 	temperature = new five.Thermometer({
-		controller: "LM35",
+		controller: "TMP36",
 		pin: "A1"
 	});
 
@@ -84,13 +82,31 @@ arduino.on("ready", function() {
 
 	// Whenever temperature provided by LM35 sensor is greater than 22° C the fan input changes its value to 'high' and when temperature is less or equal to 22° C it goes 'low'
 	temperature.on("data", function () {
-		if(this.celsius > 22 && !fan) {
+		if(this.celsius > 24 && !fan) {
 			fan_pin.high();
 			fan = !fan;
+			console.log("Temperature is: "+this.celsius+", fan is on");
 		}
 		else if(this.celsius <= 22 && fan) {
 			fan_pin.low();
 			fan = !fan;
+			console.log("Temperature is: "+this.celsius+", fan is off");
+
 		}
-	})
+	});
+
+	backyard_light_button = new five.Button(8);
+	backyard_light_pin = new five.Pin(9);
+
+	backyard_light_button.on("release", function() {
+		backyard_light = !backyard_light;
+		if(backyard_light) {
+			backyard_light_pin.high();
+			console.log("Backyard light is on");
+		}
+		else {
+			backyard_light_pin.low();
+			console.log("Backyard light is off");
+		}
+	});
 });
