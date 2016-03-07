@@ -72,7 +72,7 @@ arduino.on("ready", function() {
 		}
 	});
 
-	// Temperature will be measured with an LM35 sensor
+	// Temperature will be measured with a TMP36 sensor
 	temperature = new five.Thermometer({
 		controller: "TMP36",
 		pin: "A1"
