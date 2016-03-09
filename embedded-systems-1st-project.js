@@ -87,7 +87,7 @@ arduino.on("ready", function() {
 			fan = !fan;
 			console.log("Temperature is: "+this.celsius+", fan is on");
 		}
-		else if(this.celsius <= 22 && fan) {
+		else if(this.celsius <= 20 && fan) {
 			fan_pin.low();
 			fan = !fan;
 			console.log("Temperature is: "+this.celsius+", fan is off");
