@@ -2,6 +2,7 @@
   "name": "embedded-systems-2nd-round",
   "main": "index.html",
   "dependencies": {
-    "johnny-five": "^0.9.43"
+    "johnny-five": "^0.9.43",
+    "nwjs-j5-fix": "^1.0.3"
   }
 }
