@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Embedded Sysyems @ UAA</title>
+	<link rel="stylesheet" href="https://code.jquery.com/ui/1.11.4/themes/smoothness/jquery-ui.css">   
+	<link rel="stylesheet" href="assets/styles/bootstrap-theme.css">
+    <link rel="stylesheet" href="assets/styles/bootstrap-theme.min.css">
+    <link rel="stylesheet" href="assets/styles/bootstrap.css">
+    <link rel="stylesheet" href="assets/styles/bootstrap.min.css">
+    <link rel="stylesheet" href="assets/styles/sticky-footer-navbar.css">
+    <script src="/assets/lib/jquery-2.2.2.min.js"></script>
+    <script src="/assets/lib/bootstrap.js"></script>
+  	<script src="https://code.jquery.com/jquery-1.10.2.js"></script>
+  	<script src="https://code.jquery.com/ui/1.11.4/jquery-ui.js"></script>
+  	<script src="script.js"></script>
+</head>
+<body>
+	<div class="container">
+		<h1>Second period</h1>
+		<p>
+			<label for="amount">LED intensity</label>
+			<input type="text" id="amount" readonly style="border:0; color:#f6931f; font-weight:bold; margin: 20px">
+			<div id="slider-range-max" style="margin: 20px;"></div>
+		</p>
+		<p>
+			<label for="termometer">Temperature is: </label>
+			<input type="text" id="termometer" readonly style="border:0; color:#f6931f; font-weight:bold; margin: 20px">
+		</p>
+
+		<div>
+			<label for="living-room-light">Living room light is: </label>
+			<input type="text" id="living-room-light" readonly style="border:0; color:#f6931f; font-weight:bold; margin: 20px" value="Off">
+			<button type="button" class="btn btn-success" id="living-room-btn">Turn on</button>
+		</div>
+
+
+	</div>
+</body>
+</html>
