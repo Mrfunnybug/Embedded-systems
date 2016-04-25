@@ -1,13 +1,25 @@
 //nw.require('nwjs-j5-fix').fix();
 
-//Setting up express & socket.io
-var express = require('express');
+// Setting up express & socket.io
+var express = require('express'),
+	socket = require('socket.io');
 
+// Starting the server
 var app = express(),
 	server = app.listen(3000);
 
+// Creating a socket
+var io = socket(server);
+
+// Telling express to use the static files under the 'public' folder (going away of routes)
 app.use(express.static('public'));
 
+// Retrieving client info via socket when a new connection (only one for this project) is established
+io.sockets.on('connection', function(socket) {
+	socket.on('dimmable-led', function(value) {
+		console.log(value);
+	});
+});
 
 /*
 	Home automation with the following characteristics:

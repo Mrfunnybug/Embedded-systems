@@ -1,4 +1,5 @@
 $(function() {
+  var socket = io.connect("http://localhost:3000");
     $( "#slider-range-max" ).slider({
       range: "max",
       min: 0,
@@ -6,10 +7,11 @@ $(function() {
       value: 0,
       slide: function( event, ui ) {
         $( "#amount" ).val( ui.value );
+        socket.emit('dimmable-led', ui.value);
+        console.log(ui.value);
       }
     });
     $( "#amount" ).val( $( "#slider-range-max" ).slider( "value" ) );
-
     $("#living-room-btn").click(function() {
       var btnClass = $(this).attr('class');
       if(btnClass === "btn btn-success") {

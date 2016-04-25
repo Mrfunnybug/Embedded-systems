@@ -2,7 +2,8 @@
   "name": "embedded-systems-2nd-round",
   "main": "index.html",
   "dependencies": {
+    "express": "^4.13.4",
     "johnny-five": "^0.9.43",
-    "nwjs-j5-fix": "^1.0.3"
+    "socket.io": "^1.4.5"
   }
 }
