@@ -14,10 +14,16 @@ var io = socket(server);
 // Telling express to use the static files under the 'public' folder (going away of routes)
 app.use(express.static('public'));
 
+
 // Retrieving client info via socket when a new connection (only one for this project) is established
 io.sockets.on('connection', function(socket) {
 	socket.on('dimmable-led', function(value) {
-		console.log(value);
+		console.log('Dimmable LED value is now: ' + value);
+	});
+
+	socket.on('living-room-light', function(state) {
+		console.log('Living room lights are: ' + state);
+		socket.emit('fan', 30);
 	});
 });
 
@@ -31,10 +37,9 @@ io.sockets.on('connection', function(socket) {
 		
 	This project can get improved but for time rank just the mentioned characteristics will be covered
 */
-
+// // Setting up johnny-five
 // var five = require("johnny-five"),
-// 	nwjsJ5Fix = require('nwjs-j5-fix');
-// 	arduino = five.Board();
+//  	arduino = five.Board();
 
 // var living_room_light = false, other_rooms_light = false, fan = false, backyard_light = false;
 
@@ -60,6 +65,7 @@ io.sockets.on('connection', function(socket) {
 // 		if(voltage < 425 && !living_room_light) {
 // 			living_room_light = !living_room_light;
 // 			living_room_light_pin.high();
+// 			socket.emit('photoresistor', voltage);
 // 			console.log("Living room on by photoresistor");
 // 		}
 // 	});
@@ -111,6 +117,7 @@ io.sockets.on('connection', function(socket) {
 // 			fan_pin.high();
 // 			fan = !fan;
 // 			console.log("Temperature is: "+this.celsius+", fan is on");
+//			socket.emit('fan', this.celsius);
 // 		}
 // 		else if(this.celsius <= 20 && fan) {
 // 			fan_pin.low();
