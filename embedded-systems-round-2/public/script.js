@@ -11,23 +11,41 @@ $(function() {
         $( "#amount" ).val( ui.value );
         // Send the event to the server with the name and value of it
         socket.emit('dimmable-led', ui.value);
-        console.log(ui.value);
+        console.log("Slider value: " + ui.value);
       }
     });
 
     $( "#amount" ).val( $( "#slider-range-max" ).slider( "value" ) );
 
-    socket.on('fan', function(temperature) {
+    // Gets a change whenever the temperature sensor changes and sets it to its element
+    socket.on('temperature', function(temperature) {
       $("#termometer").val(temperature + "°C");
     })
 
 
+    // Both this and the next ( $("#other-rooms-btn").click() ) change the calling action button state and emit the event via socket
+    $("#living-room-btn").click(function() {
+      changeBtnState("#living-room-btn", "#living-room-light");
+      socket.emit('living-room-light', $("#living-room-light").val());
+      console.log($("#living-room-btn").val());
+    });
 
-    $("#living-room-btn").click(changeBtnState);
-    socket.on('photoresistor', changeBtnState);
+    $("#other-rooms-btn").click(function() {
+      changeBtnState("#other-rooms-btn", "#other-rooms-lights");
+      socket.emit('other-rooms-lights', $("#other-rooms-lights").val());
+      console.log($("#other-rooms-btn").val());
+    });
 
-    function changeBtnState() {
-        var btnClass = $("#living-room-btn").attr('class');
+
+    // Checks for events sent from arduino to change the living room or every other rooms because of a pushbutton or photoresistor
+    socket.on('living-room-pushbutton', changeBtnState("#living-room-btn", "#living-room-light"));
+    socket.on('photoresistor-change', changeBtnState("#living-room-btn", "#living-room-light"));
+    socket.on('other-rooms-change', changeBtnState("#other-rooms-btn", "#other-rooms-lights"))
+
+    // One function to rule them all, well, the UI buttons...
+    // btn: the button id to change ------ input: the input id to change
+    function changeBtnState(btn, input) {
+        var btnClass = $(btn).attr('class');
         var text, state, newBtnClass, oldBtnClass;
         if(btnClass === "btn btn-success") {
           oldBtnClass = 'btn-success';
@@ -40,11 +58,10 @@ $(function() {
           text = 'on';
           state = "Off";
         }
-        $("#living-room-btn").removeClass(oldBtnClass);
-        $("#living-room-btn").addClass(newBtnClass);
-        $("#living-room-btn").text("Turn " + text);
-        socket.emit('living-room-light', state);
-        console.log(state);
-        $("#living-room-light").val(state);
+        $(btn).removeClass(oldBtnClass);
+        $(btn).addClass(newBtnClass);
+        $(btn).text("Turn " + text);
+        console.log(btn + " is " + state);
+        $(input).val(state);
     }
   });
