@@ -11,6 +11,10 @@
     <script src="https://cdn.socket.io/socket.io-1.4.5.js"></script>
     <script src="/assets/lib/jquery-2.2.2.min.js"></script>
     <script src="/assets/lib/bootstrap.js"></script>
+    <script src="/assets/lib/p5.js" type="text/javascript"></script>
+    <script src="/assets/lib/p5.dom.js" type="text/javascript"></script>
+    <script src="/assets/lib/p5.sound.js" type="text/javascript"></script>
+    <script src="temperature_canvas_sketch.js"></script>
   	<script src="https://code.jquery.com/ui/1.11.4/jquery-ui.js"></script>
   	<script src="script.js"></script>
 </head>
@@ -25,6 +29,8 @@
 		<p>
 			<label for="termometer">Temperature is: </label>
 			<input type="text" id="termometer" readonly style="border:0; color:#f6931f; font-weight:bold; margin: 20px">
+			<div id="termo-container">
+			</div>
 		</p>
 
 		<p>
@@ -37,7 +43,7 @@
 
 		<p>
 			<div>
-				<label for="other-rooms-light">Living room light is: </label>
+				<label for="other-rooms-light">All other rooms lights are: </label>
 				<input type="text" id="other-rooms-light" readonly style="border:0; color:#f6931f; font-weight:bold; margin: 20px" value="Off">
 				<button type="button" class="btn btn-success" id="other-rooms-btn">Turn on</button>
 			</div>

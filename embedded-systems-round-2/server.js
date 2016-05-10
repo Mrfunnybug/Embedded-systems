@@ -1,4 +1,3 @@
-//nw.require('nwjs-j5-fix').fix();
 
 // Setting up express & socket.io
 var express = require('express'),
