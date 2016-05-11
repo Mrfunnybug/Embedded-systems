@@ -18,11 +18,17 @@ app.use(express.static('public'));
 io.sockets.on('connection', function(socket) {
 	socket.on('dimmable-led', function(value) {
 		console.log('Dimmable LED value is now: ' + value);
+		living_room_light_pin_led.brightness(value);
 	});
 
 	socket.on('living-room-light', function(state) {
 		console.log('Living room light is: ' + state);
 		//socket.emit('fan', 30);
+	});
+
+	socket.on('other-rooms-lights', function(val) {
+		other_rooms_light_pin_led.toggle();
+		console.log("wtf");
 	});
 });
 
@@ -36,123 +42,109 @@ io.sockets.on('connection', function(socket) {
 		
 	This project can get improved but for time rank just the mentioned characteristics will be covered
 */
-// // Setting up johnny-five
-// var five = require("johnny-five"),
-//  	arduino = five.Board();
+// Setting up johnny-five
+var five = require("johnny-five"),
+ 	arduino = five.Board();
 
-// var living_room_light = false, other_rooms_light = false, fan = false, backyard_light = false;	// Helpers
+var living_room_light = false, other_rooms_light = false, fan = false, backyard_light = false;	// Helpers
 
-// var living_room_button, other_rooms_light_button, backyard_light_button;		// Buttons pins
+var living_room_button, other_rooms_light_button, backyard_light_button;		// Buttons pins
 
-// var living_room_light_pin, other_rooms_light_pin, fan_pin;	// LEDs pins
+var living_room_light_pin_led, other_rooms_light_pin_led, fan_pin;	// LEDs pins
 
-// var backyard_light_pin				// Relay pin
+var backyard_light_pin				// Relay pin
 
-// var photoresistor;					// Light sensor
+var photoresistor;					// Light sensor
 
-// var temperature;						// Tmp sensor
+var temperature;						// Tmp sensor
 
-// arduino.on("ready", function() {
+arduino.on("ready", function() {
 	
-// 	//Initialize pushbutton for living room at digital input 2
-// 	living_room_button = five.Button(2);
+	//Initialize pushbutton for living room at digital input 2
+	living_room_button = five.Button(2);
 
-// 	// Pin 3 is used to set living room light, analog input A0 is used to check light intensity from a photoresistor
-// 	photoresistor = new five.Sensor("A0");
-// 	living_room_light_pin = new five.Pin(13);
+	// Pin 3 is used to set living room light, analog input A0 is used to check light intensity from a photoresistor
+	photoresistor = new five.Sensor("A0");
+	living_room_light_pin_led = new five.Led(6).off();
 
-// 	// Check if photoresistor gets less than a half of light available and change living room light if applicable
-//	photoresistor.scale(0, 100);
-// 	if(photoresistor.booleanAt(50){
-		// living_room_light = !living_room_light;
-		// living_room_light_pin.high();
+	// Check if photoresistor gets less than a half of light available and change living room light if applicable
+	photoresistor.scale(0, 100);
+	if(photoresistor.booleanAt(0)){
+		living_room_light = !living_room_light;
+		living_room_light_pin_led.on();
 			if(socket.connected) {
 				socket.emit('photoresistor-change');
 				console.log('photoresistor-change');
 			}
-		// console.log("Living room on by photoresistor");
-// 	}
+		console.log("Living room on by photoresistor");
+	}
 
-// 	// Changes living room light when pushbutton is pushed
-// 	living_room_button.on("release", function () {
-// 		living_room_light = !living_room_light;
-// 		if(living_room_light) {
-// 			living_room_light_pin.high();
-// 			console.log("Living room on manually");
-// 		}
-// 		else {
-// 			living_room_light_pin.low();
-// 			console.log("Living room off manually");
-// 		}
+	// Changes living room light when pushbutton is pushed
+	living_room_button.on("release", function () {
+		living_room_light = !living_room_light;
+		living_room_light_pin_led.toggle();
 		if(socket.connected) {
 			socket.emit('living-room-light-pushbutton');
 			console.log('living-room-light-pushbutton');
 		}
-// 	});
+	});
 
-// 	// All rooms excepting the living room are simultaneously light powered on manually	
-// 	other_rooms_light_button = five.Button(4);
+	// All rooms excepting the living room are simultaneously light powered on manually	
+	other_rooms_light_button = five.Button(4);
 
-// 	// Light is powered via pin 12, LEDs connected in parallel
-// 	other_rooms_light_pin = new five.Pin(12);
+	// Light is powered via pin 12, LEDs connected in parallel
+	other_rooms_light_pin_led = new five.Led(12);
 
-// 	// Change light state whenever 'other_lights_button' is pressed then released
-// 	other_rooms_light_button.on("release", function () {
-// 		other_rooms_light = !other_rooms_light;
-// 		if(other_rooms_light) {
-// 			other_rooms_light_pin.high();
-// 			console.log("Other rooms lights are on");
-// 		}
-// 		else {
-// 			other_rooms_light_pin.low();
-// 			console.log("Other rooms lights are off");
-// 		}
+	// Change light state whenever 'other_lights_button' is pressed then released
+	other_rooms_light_button.on("release", function () {
+		other_rooms_light = !other_rooms_light;
+		other_rooms_light_pin_led.toggle();
 		if(socket.connected) {
 			socket.emit('other-rooms-change');
 			console.log('other-rooms-change');
 		}
-// 	});
+	});
 
-// 	// Temperature will be measured with a TMP36 sensor
-// 	temperature = new five.Thermometer({
-// 		controller: "TMP36",
-// 		pin: "A1",
-// 		freq: 5000
-// 	});
+	// Temperature will be measured with a TMP36 sensor
+	temperature = new five.Thermometer({
+		controller: "TMP36",
+		pin: "A1",
+		freq: 5000
+	});
 
-// 	fan_pin = new five.Pin(5);
+	fan_pin = new five.Pin(5);
 
-// 	// Whenever temperature provided by LM35 sensor is greater than 22° C the fan input changes its value to 'high' and when temperature is less or equal to 22° C it goes 'low'
-// 	temperature.on("data", function () {
+	// Whenever temperature provided by LM35 sensor is greater than 22° C the fan input changes its value to 'high' and when temperature is less or equal to 22° C it goes 'low'
+	temperature.on("data", function () {
 		if(socket.connected) {
 			socket.emit('temperature', 25);
 			console.log('temperature: ' + 25);
 		}
-// 		if(this.celsius > 24 && !fan) {
-// 			fan_pin.high();
-// 			fan = !fan;
-// 			console.log("Temperature is: "+this.celsius+", fan is on");
-//			socket.emit('fan', this.celsius);
-// 		}
-// 		else if(this.celsius <= 20 && fan) {
-// 			fan_pin.low();
-// 			fan = !fan;
-// 			console.log("Temperature is: "+this.celsius+", fan is off");
-// 		}
-// 	});
+		if(this.celsius > 24 && !fan) {
+			fan_pin.high();
+			fan = !fan;
+			console.log("Temperature is: "+this.celsius+", fan is on");
+			if(socket.connected) socket.emit('fan', this.celsius);
+		}
+		else if(this.celsius <= 20 && fan) {
+			fan_pin.low();
+			fan = !fan;
+			console.log("Temperature is: "+this.celsius+", fan is off");
+		}
+	});
 
-// 	backyard_light_button = new five.Button(8);
-// 	backyard_light_pin = new five.Pin(9);
+	backyard_light_button = new five.Button(8);
+	backyard_light_pin = new five.Pin(9);
 
-// 	backyard_light_button.on("release", function() {
-// 		backyard_light = !backyard_light;
-// 		if(backyard_light) {
-// 			backyard_light_pin.high();
-// 			console.log("Backyard light is on");
-// 		}
-// 		else {
-// 			backyard_light_pin.low();
-// 			console.log("Backyard light is off");
-// 		}
-// 	});
-// });
+	backyard_light_button.on("release", function() {
+		backyard_light = !backyard_light;
+		if(backyard_light) {
+			backyard_light_pin.high();
+			console.log("Backyard light is on");
+		}
+		else {
+			backyard_light_pin.low();
+			console.log("Backyard light is off");
+		}
+	});
+});
