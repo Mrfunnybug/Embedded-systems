@@ -18,12 +18,12 @@ app.use(express.static('public'));
 io.sockets.on('connection', function(socket) {
 	socket.on('dimmable-led', function(value) {
 		console.log('Dimmable LED value is now: ' + value);
-		living_room_light_pin_led.brightness(value);
+		dimmable_led.brightness(value);
 	});
 
 	socket.on('living-room-light', function(state) {
 		console.log('Living room light is: ' + state);
-		//socket.emit('fan', 30);
+		living_room_light_pin_led.toggle();
 	});
 
 	socket.on('other-rooms-lights', function(val) {
@@ -50,7 +50,7 @@ var living_room_light = false, other_rooms_light = false, fan = false, backyard_
 
 var living_room_button, other_rooms_light_button, backyard_light_button;		// Buttons pins
 
-var living_room_light_pin_led, other_rooms_light_pin_led, fan_pin;	// LEDs pins
+var living_room_light_pin_led, other_rooms_light_pin_led, fan_pin,	dimmable_led;// LEDs pins
 
 var backyard_light_pin				// Relay pin
 
@@ -60,33 +60,35 @@ var temperature;						// Tmp sensor
 
 arduino.on("ready", function() {
 	
+	dimmable_led = five.Led(6);
+
 	//Initialize pushbutton for living room at digital input 2
 	living_room_button = five.Button(2);
 
 	// Pin 3 is used to set living room light, analog input A0 is used to check light intensity from a photoresistor
 	photoresistor = new five.Sensor("A0");
-	living_room_light_pin_led = new five.Led(6).off();
+	living_room_light_pin_led = new five.Led(13);
+	living_room_light_pin_led.off();
 
 	// Check if photoresistor gets less than a half of light available and change living room light if applicable
-	photoresistor.scale(0, 100);
-	if(photoresistor.booleanAt(0)){
-		living_room_light = !living_room_light;
-		living_room_light_pin_led.on();
+	/*photoresistor.on('change', function() {
+		if(this.scaleTo([0, 100]) < 50){
+			living_room_light = !living_room_light;
+			living_room_light_pin_led.on();
 			if(socket.connected) {
 				socket.emit('photoresistor-change');
 				console.log('photoresistor-change');
 			}
-		console.log("Living room on by photoresistor");
-	}
+			console.log("photoresistor");
+		}
+	});*/
 
 	// Changes living room light when pushbutton is pushed
 	living_room_button.on("release", function () {
 		living_room_light = !living_room_light;
 		living_room_light_pin_led.toggle();
-		if(socket.connected) {
-			socket.emit('living-room-light-pushbutton');
-			console.log('living-room-light-pushbutton');
-		}
+		io.sockets.emit('living-room-light-pushbutton', null);
+		console.log('living-room-light-pushbutton');
 	});
 
 	// All rooms excepting the living room are simultaneously light powered on manually	
@@ -99,10 +101,8 @@ arduino.on("ready", function() {
 	other_rooms_light_button.on("release", function () {
 		other_rooms_light = !other_rooms_light;
 		other_rooms_light_pin_led.toggle();
-		if(socket.connected) {
-			socket.emit('other-rooms-change');
-			console.log('other-rooms-change');
-		}
+		io.sockets.emit('other-rooms-change');
+		console.log('other-rooms-change');
 	});
 
 	// Temperature will be measured with a TMP36 sensor
@@ -116,15 +116,12 @@ arduino.on("ready", function() {
 
 	// Whenever temperature provided by LM35 sensor is greater than 22° C the fan input changes its value to 'high' and when temperature is less or equal to 22° C it goes 'low'
 	temperature.on("data", function () {
-		if(socket.connected) {
-			socket.emit('temperature', 25);
+		io.sockets.emit('temperature', 25);
 			console.log('temperature: ' + 25);
-		}
 		if(this.celsius > 24 && !fan) {
 			fan_pin.high();
 			fan = !fan;
 			console.log("Temperature is: "+this.celsius+", fan is on");
-			if(socket.connected) socket.emit('fan', this.celsius);
 		}
 		else if(this.celsius <= 20 && fan) {
 			fan_pin.low();

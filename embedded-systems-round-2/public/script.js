@@ -17,12 +17,6 @@ $(function() {
 
     $( "#amount" ).val( $( "#slider-range-max" ).slider( "value" ) );
 
-    // Gets a change whenever the temperature sensor changes and sets it to its element
-    socket.on('temperature', function(temperature) {
-      $("#termometer").val(temperature + "°C");
-    })
-
-
     // Both this and the next ( $("#other-rooms-btn").click() ) change the calling action button state and emit the event via socket
     $("#living-room-btn").click(function() {
       changeBtnState("#living-room-btn", "#living-room-light");
@@ -31,16 +25,16 @@ $(function() {
     });
 
     $("#other-rooms-btn").click(function() {
-      changeBtnState("#other-rooms-btn", "#other-rooms-lights");
-      socket.emit('other-rooms-lights', $("#other-rooms-lights").val());
+      changeBtnState("#other-rooms-btn", "#other-rooms-light");
+      socket.emit('other-rooms-lights', $("#other-rooms-light").val());
       console.log($("#other-rooms-btn").val());
     });
 
 
     // Checks for events sent from arduino to change the living room or every other rooms because of a pushbutton or photoresistor
-    socket.on('living-room-pushbutton', changeBtnState("#living-room-btn", "#living-room-light"));
-    socket.on('photoresistor-change', changeBtnState("#living-room-btn", "#living-room-light"));
-    socket.on('other-rooms-change', changeBtnState("#other-rooms-btn", "#other-rooms-lights"))
+    socket.on('living-room-light-pushbutton', function() { changeBtnState("#living-room-btn", "#living-room-light") });
+    socket.on('photoresistor-change', function() { changeBtnState("#living-room-btn", "#living-room-light") });
+    socket.on('other-rooms-change', function() { changeBtnState("#other-rooms-btn", "#other-rooms-light") })
 
     // One function to rule them all, well, the UI buttons...
     // btn: the button id to change ------ input: the input id to change
@@ -60,6 +54,7 @@ $(function() {
         }
         $(btn).removeClass(oldBtnClass);
         $(btn).addClass(newBtnClass);
+        
         $(btn).text("Turn " + text);
         console.log(btn + " is " + state);
         $(input).val(state);

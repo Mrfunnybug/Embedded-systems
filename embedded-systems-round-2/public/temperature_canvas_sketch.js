@@ -1,9 +1,15 @@
 var poop = [];
 poop.push({x: 0, y: 0});
+var socket = io.connect("http://localhost:3000");
+
 function setup() {
   cnv = createCanvas(displayWidth / 2, displayHeight / 5);
   cnv.parent("termo-container");
-  $("#living-room-btn").click(drawPoint);
+  // Gets a change whenever the temperature sensor changes and sets it to its element
+  socket.on('temperature', function(temperature) {
+    $("#termometer").val(temperature + "°C");
+    drawPoint;
+  });
 }
  
 function draw() {
