@@ -71,17 +71,14 @@ arduino.on("ready", function() {
 	living_room_light_pin_led.off();
 
 	// Check if photoresistor gets less than a half of light available and change living room light if applicable
-	/*photoresistor.on('change', function() {
-		if(this.scaleTo([0, 100]) < 50){
+	photoresistor.on('change', function() {
+		if(this.scaleTo([0, 100]) < 60){
 			living_room_light = !living_room_light;
 			living_room_light_pin_led.on();
-			if(socket.connected) {
-				socket.emit('photoresistor-change');
-				console.log('photoresistor-change');
-			}
-			console.log("photoresistor");
+			io.sockets.emit('photoresistor-change');
+			console.log('photoresistor-change');
 		}
-	});*/
+	});
 
 	// Changes living room light when pushbutton is pushed
 	living_room_button.on("release", function () {
@@ -109,24 +106,24 @@ arduino.on("ready", function() {
 	temperature = new five.Thermometer({
 		controller: "TMP36",
 		pin: "A1",
-		freq: 5000
+		freq: 2000
 	});
 
 	fan_pin = new five.Pin(5);
 
 	// Whenever temperature provided by LM35 sensor is greater than 22° C the fan input changes its value to 'high' and when temperature is less or equal to 22° C it goes 'low'
 	temperature.on("data", function () {
-		io.sockets.emit('temperature', 25);
-			console.log('temperature: ' + 25);
+		io.sockets.emit('temperature', this.celsius.toFixed(2));
+			console.log('temperature: ' + this.celsius.toFixed(2));
 		if(this.celsius > 24 && !fan) {
 			fan_pin.high();
 			fan = !fan;
-			console.log("Temperature is: "+this.celsius+", fan is on");
+			console.log("Temperature is: "+this.celsius.toFixed(2)+", fan is on");
 		}
 		else if(this.celsius <= 20 && fan) {
 			fan_pin.low();
 			fan = !fan;
-			console.log("Temperature is: "+this.celsius+", fan is off");
+			console.log("Temperature is: "+this.celsius.toFixed(2)+", fan is off");
 		}
 	});
 

@@ -8,7 +8,7 @@ function setup() {
   // Gets a change whenever the temperature sensor changes and sets it to its element
   socket.on('temperature', function(temperature) {
     $("#termometer").val(temperature + "°C");
-    drawPoint;
+    drawPoint(temperature);
   });
 }
  
@@ -19,17 +19,17 @@ function draw() {
   beginShape();
   for (var i=0; i < poop.length; i++) {
     var P = poop[i];
-    vertex(P.x, P.y);
-    text(P.y.toFixed(2), P.x, P.y);
+    vertex(P.x, height - P.y);
+    text(P.y, P.x, height - P.y);
     //if (P.x<0)poop.pop(i);
     P.x--;
   }
   endShape();  
 }
  
-function drawPoint() {
-  var t = random(0, height-20);
-  var P = new Points(width, t );
+function drawPoint(temp) {
+  //var t = random(0, height-20);
+  var P = new Points(width, temp);
   poop.push(P);
 }
 
