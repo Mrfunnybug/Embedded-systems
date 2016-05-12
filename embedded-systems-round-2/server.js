@@ -1,3 +1,19 @@
+/*
+	Home automation with the following characteristics:
+		1.- It has 3 rooms, one living room, dining room, kitchen, bathroom, and a backyard
+		2.- The living room light must be activated both manually or automatic with the use of a photoresistor
+		3.- Every other rooms lights are controlled manually with a button
+		4.- It has a ventilation system using tmp36 and a dc motor
+		5.- Backyard's light is controlled manually with a pushbutton and is an AC bulb
+		6.- A dimmable light
+
+		Node.js, p5.js, johhny-five, jquery, and socket.io are implemented to enhance user-arduino interaction via
+		web app with controls and a chart to show the current temperature
+		
+	This project can get improved but for time rank just the mentioned characteristics will be covered
+*/
+
+
 
 // Setting up express & socket.io
 var express = require('express'),
@@ -16,32 +32,25 @@ app.use(express.static('public'));
 
 // Retrieving client info via socket when a new connection (only one for this project) is established
 io.sockets.on('connection', function(socket) {
+
+	// Get dimmable light value from the UI and send it to the arduino
 	socket.on('dimmable-led', function(value) {
 		console.log('Dimmable LED value is now: ' + value);
 		dimmable_led.brightness(value);
 	});
 
-	socket.on('living-room-light', function(state) {
-		console.log('Living room light is: ' + state);
-		living_room_light_pin_led.toggle();
-	});
+	// Living room and other rooms lights can be controlled via UI
+		socket.on('living-room-light', function(state) {
+			console.log('Living room light is: ' + state);
+			living_room_light_pin_led.toggle();
+		});
 
-	socket.on('other-rooms-lights', function(val) {
-		other_rooms_light_pin_led.toggle();
-		console.log("wtf");
-	});
+		socket.on('other-rooms-lights', function(val) {
+			other_rooms_light_pin_led.toggle();
+			console.log("wtf");
+		});
 });
 
-/*
-	Home automation with the following characteristics:
-		1.- It has 3 rooms, one living room, dining room, kitchen, bathroom, and a backyard
-		->2.- The living room light must be activated both manually or automatic with the use of a photoresistor
-		->3.- Every other rooms lights are controlled manually with a button
-		->4.- It has a ventilation system using lm35 and a dc motor
-		5.- Backyard's light is controlled manually with a pushbutton and is an AC bulb
-		
-	This project can get improved but for time rank just the mentioned characteristics will be covered
-*/
 // Setting up johnny-five
 var five = require("johnny-five"),
  	arduino = five.Board();

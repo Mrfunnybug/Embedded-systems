@@ -33,6 +33,8 @@ $(function() {
 
     // Checks for events sent from arduino to change the living room or every other rooms because of a pushbutton or photoresistor
     socket.on('living-room-light-pushbutton', function() { changeBtnState("#living-room-btn", "#living-room-light") });
+    
+///// I need to change this to handle the photoresistor only once per state /////
     socket.on('photoresistor-change', function() { changeBtnState("#living-room-btn", "#living-room-light") });
     socket.on('other-rooms-change', function() { changeBtnState("#other-rooms-btn", "#other-rooms-light") })
 
