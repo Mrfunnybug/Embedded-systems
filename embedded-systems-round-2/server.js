@@ -74,7 +74,7 @@ arduino.on("ready", function() {
 	//Initialize pushbutton for living room at digital input 2
 	living_room_button = five.Button(2);
 
-	// Pin 3 is used to set living room light, analog input A0 is used to check light intensity from a photoresistor
+	// Pin 13 is used to set living room light, analog input A0 is used to check light intensity from a photoresistor
 	photoresistor = new five.Sensor("A0");
 	living_room_light_pin_led = new five.Led(13);
 	living_room_light_pin_led.off();

@@ -1,6 +1,21 @@
 
 
-To check it out just
+To check it out you need to have an arduino (UNO used during development) whit the following pins attached to: 
+
+| PIN | COMPONENT 				   |
+|-----|---------------------------:|
+|2	  |push_button (living room)   |
+|4	  |push_button (other rooms)   |
+|5	  |transistor (for a fan)      |
+|6	  |LED (dimmable LED)		   |
+|8	  |push_button (backyard)	   |
+|9	  |relay (backyard bulb)	   |
+|12	  |LED (other rooms)		   |
+|13   |LED (living room)		   |
+|A0	  |photoresistor (living room) |
+|A1   |TMP36 (can be changed) 	   |
+
+
 ```
 git clone https://github.com/VzqzAc/Embedded-systems.git
 cd Embedded-systems/embedded-systems-round-2
