@@ -30,7 +30,8 @@ And go to your http://localhost:3000 (you can change the port on the server.js f
 **Ps. You need to add bootstrap, jquery, p5.js to `assets/lib` and `assets/styles` folders**
 
 # What?
-Home automation with the following characteristics:
+Home automation with the following characteristics
+
 1. It has 3 rooms, one living room, dining room, kitchen, bathroom, and a backyard
 2. The living room light must be activated both manually or automatic with the use of a photoresistor
 3. Every other rooms lights are controlled manually with a button
