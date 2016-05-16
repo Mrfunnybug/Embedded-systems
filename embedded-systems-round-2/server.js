@@ -124,15 +124,19 @@ arduino.on("ready", function() {
 	temperature.on("data", function () {
 		io.sockets.emit('temperature', this.celsius.toFixed(2));
 			console.log('temperature: ' + this.celsius.toFixed(2));
-		if(this.celsius > 24 && !fan) {
-			fan_pin.high();
-			fan = !fan;
-			console.log("Temperature is: "+this.celsius.toFixed(2)+", fan is on");
+		if(this.celsius > 24.00) {
+			if(fan) {
+				fan_pin.high();
+				fan = !fan;
+				console.log("Temperature is: "+this.celsius.toFixed(2)+", fan is on");
+			}
 		}
-		else if(this.celsius <= 20 && fan) {
-			fan_pin.low();
-			fan = !fan;
-			console.log("Temperature is: "+this.celsius.toFixed(2)+", fan is off");
+		else if(this.celsius < 24.00) {
+			if(!fan) {
+				fan_pin.low();
+				fan = !fan;
+				console.log("Temperature is: "+this.celsius.toFixed(2)+", fan is off");
+			}
 		}
 	});
 
