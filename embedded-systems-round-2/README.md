@@ -21,8 +21,8 @@ Ps. You need to add bootstrap, jquery, p5.js to `assets/lib` and `assets/styles`
 		6.- A dimmable light
 
 # How?
-	Node.js, p5.js, johhny-five, jquery, bootstrap and socket.io are implemented to enhance user-arduino interaction via
-	web app with controls and a chart to show the current temperature
+Node.js, p5.js, johhny-five, jquery, bootstrap and socket.io are implemented to enhance user-arduino interaction via
+web app with controls and a chart to show the current temperature
 
 # Why?
-	Originally this was created to get a good grade at the University, but I'm thinking about using it in my own house, but first I need to improve it
+Originally this was created to get a good grade at the University, but I'm thinking about using it in my own house, but first I need to improve it
