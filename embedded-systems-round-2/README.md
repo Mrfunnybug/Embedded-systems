@@ -31,12 +31,12 @@ And go to your http://localhost:3000 (you can change the port on the server.js f
 
 # What?
 Home automation with the following characteristics:
-	1.- It has 3 rooms, one living room, dining room, kitchen, bathroom, and a backyard
-	2.- The living room light must be activated both manually or automatic with the use of a photoresistor
-	3.- Every other rooms lights are controlled manually with a button
-	4.- It has a ventilation system using tmp36 and a dc motor
-	5.- Backyard's light is controlled manually with a pushbutton and is an AC bulb
-	6.- A dimmable light
+1. It has 3 rooms, one living room, dining room, kitchen, bathroom, and a backyard
+2. The living room light must be activated both manually or automatic with the use of a photoresistor
+3. Every other rooms lights are controlled manually with a button
+4. It has a ventilation system using tmp36 and a dc motor
+5. Backyard's light is controlled manually with a pushbutton and is an AC bulb
+6. A dimmable light
 
 # How?
 Node.js, p5.js, johhny-five, jquery, bootstrap and socket.io are implemented to enhance user-arduino interaction via
