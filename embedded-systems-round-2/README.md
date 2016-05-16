@@ -27,7 +27,7 @@ And go to your http://localhost:3000 (you can change the port on the server.js f
 
 ![alt-text](client.JPG "You should see this")
 
-Ps. You need to add bootstrap, jquery, p5.js to `assets/lib` and `assets/styles` folders
+**Ps. You need to add bootstrap, jquery, p5.js to `assets/lib` and `assets/styles` folders**
 
 # What?
 Home automation with the following characteristics:
