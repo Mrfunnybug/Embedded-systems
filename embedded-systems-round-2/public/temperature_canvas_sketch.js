@@ -1,8 +1,6 @@
 var chartpoints = [];
 chartpoints.push({x: 0, y: 0});
 var socket = io.connect("http://localhost:3000");
-
-
 // Creating a canvas where the chart will be displayed and matching the connection with the socket
 function setup() {
   cnv = createCanvas(displayWidth / 2, displayHeight / 5);
@@ -13,7 +11,6 @@ function setup() {
     createPoint(temperature);
   });
 }
- 
 // Handle chart points to display
 function draw() {
   background(255);
@@ -32,7 +29,6 @@ function draw() {
   endShape();  
   //// Ends draw of point
 }
- 
 // This function is called whenever the tmp36 sends a new value to the client
 function createPoint(temp) {
   //var t = random(0, height-20);
@@ -40,19 +36,15 @@ function createPoint(temp) {
   var P = new Points(width, temp);
   chartpoints.push(P);
 }
-
-
 // Custom class of points that will be drawed
 var Points = function()
 {
     var x;
     var y;
-
     var constructor = function Points(x, y)
     {
         this.x = x;
         this.y = y;
     };
-
     return constructor;
 }();

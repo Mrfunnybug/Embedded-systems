@@ -14,30 +14,33 @@ $(function() {
         console.log("Slider value: " + ui.value);
       }
     });
-
     $( "#amount" ).val( $( "#slider-range-max" ).slider( "value" ) );
-
     // Both this and the next ( $("#other-rooms-btn").click() ) change the calling action button state and emit the event via socket
     $("#living-room-btn").click(function() {
       changeBtnState("#living-room-btn", "#living-room-light");
       socket.emit('living-room-light', $("#living-room-light").val());
       console.log($("#living-room-btn").val());
     });
-
     $("#other-rooms-btn").click(function() {
       changeBtnState("#other-rooms-btn", "#other-rooms-light");
       socket.emit('other-rooms-lights', $("#other-rooms-light").val());
       console.log($("#other-rooms-btn").val());
     });
-
-
     // Checks for events sent from arduino to change the living room or every other rooms because of a pushbutton or photoresistor
     socket.on('living-room-light-pushbutton', function() { changeBtnState("#living-room-btn", "#living-room-light") });
-    
+    socket.on('backyard-light-change', function(value) {
+      if(value) {
+        if($("#backyard-light").val() == "Off") {
+          $("#backyard-light").val("On");
+        }
+      }
+      else if($("#backyard-light").val() == "On") {
+        $("#backyard-light").val("Off");
+      }
+    });
 ///// I need to change this to handle the photoresistor only once per state /////
     socket.on('photoresistor-change', function() { changeBtnState("#living-room-btn", "#living-room-light") });
     socket.on('other-rooms-change', function() { changeBtnState("#other-rooms-btn", "#other-rooms-light") })
-
     // One function to rule them all, well, the UI buttons...
     // btn: the button id to change ------ input: the input id to change
     function changeBtnState(btn, input) {
