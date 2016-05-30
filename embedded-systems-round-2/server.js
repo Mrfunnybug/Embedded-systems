@@ -54,17 +54,21 @@ io.sockets.on('connection', function(socket) {
 // Setting up johnny-five
 var five = require("johnny-five"),
  	arduino = five.Board();
+
 //////////////////////////////// VARIABLES ////////////////////////////////
 var living_room_light = false, other_rooms_light = false, fan = false, backyard_light = false;	// Helpers
 var living_room_button, other_rooms_light_button, backyard_light_button;		// Buttons pins
 var living_room_light_pin_led, other_rooms_light_pin_led, fan_pin,	dimmable_led;// LEDs pins
-var backyard_light_pin				// Relay pin
+var backyard_light_pin;				// Relay pin
 var photoresistor;					// Light sensor
 var temperature;						// Tmp sensor
+
 //////////////////////////////// BOARD ////////////////////////////////
 arduino.on("ready", function() {
+
   //////////////////////////////// DIMMABLE LED ////////////////////////////////
 	dimmable_led = five.Led(6);
+
   //////////////////////////////// LIVING ROOM ////////////////////////////////
 	//Initialize pushbutton for living room at digital input 2
 	living_room_button = five.Button(2);
@@ -88,6 +92,7 @@ arduino.on("ready", function() {
 		io.sockets.emit('living-room-light-pushbutton', null);
 		console.log('living-room-light-pushbutton');
 	});
+
   //////////////////////////////// OTHER ROOMS ////////////////////////////////
 	// All rooms excepting the living room are simultaneously light powered on manually	
 	other_rooms_light_button = five.Button(4);
@@ -100,6 +105,7 @@ arduino.on("ready", function() {
 		io.sockets.emit('other-rooms-change');
 		console.log('other-rooms-change');
 	});
+
   //////////////////////////////// FAN CONTROLLING WITH TEMPERATURE MEASURING ////////////////////////////////
 	// Temperature will be measured with a TMP36 sensor
 	temperature = new five.Thermometer({
@@ -128,6 +134,7 @@ arduino.on("ready", function() {
 			}
 		}
 	});
+
   //////////////////////////////// BACKYARD LIGHT ////////////////////////////////
 	backyard_light_button = new five.Button(8);
 	// Relay to toggle the backyard light is attached to pin 9
@@ -146,5 +153,6 @@ arduino.on("ready", function() {
 			io.sockets.emit('backyard-light-change', 0);
 		}
 	});
-  //////////////////////////////// IR ////////////////////////////////
+  //////////////////////////////// Last Part ////////////////////////////////
+  /* This part will be dedicated to security, on the school subject project, we need to make sure that none of the lights will be turned on if there is no precense of people in the house unless the user activates a function to turn 'em on
 });
