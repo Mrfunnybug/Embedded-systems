@@ -153,6 +153,4 @@ arduino.on("ready", function() {
 			io.sockets.emit('backyard-light-change', 0);
 		}
 	});
-  //////////////////////////////// Last Part ////////////////////////////////
-  /* This part will be dedicated to security, on the school subject project, we need to make sure that none of the lights will be turned on if there is no precense of people in the house unless the user activates a function to turn 'em on
 });
