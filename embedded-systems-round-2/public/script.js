@@ -38,6 +38,20 @@ $(function() {
         $("#backyard-light").val("Off");
       }
     });
+
+    socket.on('people', function(value) {
+      if(value === 'in') {
+        $("#people").val(function(i, oldValue) {
+          return ++oldValue;
+        });
+      }
+      else if(value === 'out') {
+        $("#people").val(function(i, oldValue) {
+          return --oldValue;
+        });
+      }
+      
+    });
 ///// I need to change this to handle the photoresistor only once per state /////
     socket.on('photoresistor-change', function() { changeBtnState("#living-room-btn", "#living-room-light") });
     socket.on('other-rooms-change', function() { changeBtnState("#other-rooms-btn", "#other-rooms-light") })

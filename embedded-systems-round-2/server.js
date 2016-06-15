@@ -61,50 +61,51 @@ var living_room_button, other_rooms_light_button, backyard_light_button;		// But
 var living_room_light_pin_led, other_rooms_light_pin_led, fan_pin,	dimmable_led;// LEDs pins
 var backyard_light_pin;				// Relay pin
 var photoresistor;					// Light sensor
-var temperature;						// Tmp sensor
+var temperature, people_counter, front_door;						// Tmp and infrared sensors
+var previous_ppl_value_in = previous_ppl_value_out = 4444444;
 
 //////////////////////////////// BOARD ////////////////////////////////
 arduino.on("ready", function() {
 
-  //////////////////////////////// DIMMABLE LED ////////////////////////////////
-	dimmable_led = five.Led(6);
+ //  //////////////////////////////// DIMMABLE LED ////////////////////////////////
+	// dimmable_led = five.Led(6);
 
-  //////////////////////////////// LIVING ROOM ////////////////////////////////
-	//Initialize pushbutton for living room at digital input 2
-	living_room_button = five.Button(2);
-	// Pin 13 is used to set living room light, analog input A0 is used to check light intensity from a photoresistor
-	photoresistor = new five.Sensor("A0");
-	living_room_light_pin_led = new five.Led(13);
-	living_room_light_pin_led.off();
-	// Check if photoresistor gets less than a half of light available and change living room light if applicable
-	photoresistor.on('change', function() {
-		if(this.scaleTo([0, 100]) < 60){
-			living_room_light = !living_room_light;
-			living_room_light_pin_led.on();
-			io.sockets.emit('photoresistor-change');
-			console.log('photoresistor-change');
-		}
-	});
-	// Changes living room light when pushbutton is pushed
-	living_room_button.on("release", function () {
-		living_room_light = !living_room_light;
-		living_room_light_pin_led.toggle();
-		io.sockets.emit('living-room-light-pushbutton', null);
-		console.log('living-room-light-pushbutton');
-	});
+ //  //////////////////////////////// LIVING ROOM ////////////////////////////////
+	// //Initialize pushbutton for living room at digital input 2
+	// living_room_button = five.Button(2);
+	// // Pin 13 is used to set living room light, analog input A0 is used to check light intensity from a photoresistor
+	// photoresistor = new five.Sensor("A0");
+	// living_room_light_pin_led = new five.Led(13);
+	// living_room_light_pin_led.off();
+	// // Check if photoresistor gets less than a half of light available and change living room light if applicable
+	// photoresistor.on('change', function() {
+	// 	if(this.scaleTo([0, 100]) < 60){
+	// 		living_room_light = !living_room_light;
+	// 		living_room_light_pin_led.on();
+	// 		io.sockets.emit('photoresistor-change');
+	// 		console.log('photoresistor-change');
+	// 	}
+	// });
+	// // Changes living room light when pushbutton is pushed
+	// living_room_button.on("release", function () {
+	// 	living_room_light = !living_room_light;
+	// 	living_room_light_pin_led.toggle();
+	// 	io.sockets.emit('living-room-light-pushbutton', null);
+	// 	console.log('living-room-light-pushbutton');
+	// });
 
-  //////////////////////////////// OTHER ROOMS ////////////////////////////////
-	// All rooms excepting the living room are simultaneously light powered on manually	
-	other_rooms_light_button = five.Button(4);
-	// Light is powered via pin 12, LEDs connected in parallel
-	other_rooms_light_pin_led = new five.Led(12);
-	// Change light state whenever 'other_lights_button' is pressed then released
-	other_rooms_light_button.on("release", function () {
-		other_rooms_light = !other_rooms_light;
-		other_rooms_light_pin_led.toggle();
-		io.sockets.emit('other-rooms-change');
-		console.log('other-rooms-change');
-	});
+ //  //////////////////////////////// OTHER ROOMS ////////////////////////////////
+	// // All rooms excepting the living room are simultaneously light powered on manually	
+	// other_rooms_light_button = five.Button(4);
+	// // Light is powered via pin 12, LEDs connected in parallel
+	// other_rooms_light_pin_led = new five.Led(12);
+	// // Change light state whenever 'other_lights_button' is pressed then released
+	// other_rooms_light_button.on("release", function () {
+	// 	other_rooms_light = !other_rooms_light;
+	// 	other_rooms_light_pin_led.toggle();
+	// 	io.sockets.emit('other-rooms-change');
+	// 	console.log('other-rooms-change');
+	// });
 
   //////////////////////////////// FAN CONTROLLING WITH TEMPERATURE MEASURING ////////////////////////////////
 	// Temperature will be measured with a TMP36 sensor
@@ -118,39 +119,62 @@ arduino.on("ready", function() {
 	// Whenever temperature provided by LM35 sensor is greater than 22° C the fan input changes its value to 'high' and when temperature is less or equal to 22° C it goes 'low'
 	temperature.on("data", function () {
 		io.sockets.emit('temperature', this.celsius.toFixed(2));
-			console.log('temperature: ' + this.celsius.toFixed(2));
+			//console.log('temperature: ' + this.celsius.toFixed(2));
 		if(this.celsius > 24.00) {
 			if(fan) {
 				fan_pin.high();
 				fan = !fan;
-				console.log("Temperature is: "+this.celsius.toFixed(2)+", fan is on");
+				//console.log("Temperature is: "+this.celsius.toFixed(2)+", fan is on");
 			}
 		}
 		else if(this.celsius < 24.00) {
 			if(!fan) {
 				fan_pin.low();
 				fan = !fan;
-				console.log("Temperature is: "+this.celsius.toFixed(2)+", fan is off");
+				//console.log("Temperature is: "+this.celsius.toFixed(2)+", fan is off");
 			}
 		}
 	});
 
-  //////////////////////////////// BACKYARD LIGHT ////////////////////////////////
-	backyard_light_button = new five.Button(8);
-	// Relay to toggle the backyard light is attached to pin 9
-	backyard_light_pin = new five.Pin(9);
-	// Check any pushbutton event to toggle the light
-	backyard_light_button.on("release", function() {
-		backyard_light = !backyard_light;
-		if(backyard_light) {
-			backyard_light_pin.high();
-			console.log("Backyard light is on");
-			io.sockets.emit('backyard-light-change', 1);
+ //  //////////////////////////////// BACKYARD LIGHT ////////////////////////////////
+	// backyard_light_button = new five.Button(8);
+	// // Relay to toggle the backyard light is attached to pin 9
+	// backyard_light_pin = new five.Pin(9);
+	// // Check any pushbutton event to toggle the light
+	// backyard_light_button.on("release", function() {
+	// 	backyard_light = !backyard_light;
+	// 	if(backyard_light) {
+	// 		backyard_light_pin.high();
+	// 		console.log("Backyard light is on");
+	// 		io.sockets.emit('backyard-light-change', 1);
+	// 	}
+	// 	else {
+	// 		backyard_light_pin.low();
+	// 		console.log("Backyard light is off");
+	// 		io.sockets.emit('backyard-light-change', 0);
+	// 	}
+	// });
+
+////////////////////// INFRARED //////////////////////////
+	people_counter = new five.IR.Reflect.Array({
+		emitter: 10,
+		pins: ["A2","A3"],
+		freq: 500
+	}).enable();
+
+
+	people_counter.on("data", function() {
+		if(this.raw[0] < 4) {
+			io.sockets.emit('people', 'in');
+			console.log("IN " + this.raw[0]);
 		}
-		else {
-			backyard_light_pin.low();
-			console.log("Backyard light is off");
-			io.sockets.emit('backyard-light-change', 0);
+		if(this.raw[1] < 4) {
+			io.sockets.emit('people', 'out');
+			console.log("OUT " + this.raw[1]);
 		}
 	});
 });
+
+function security() {
+	// body...
+}
