@@ -113,16 +113,25 @@ arduino.on("ready", function() {
 	//Initialize pushbutton for living room at digital input 7
 	living_room_button = five.Button(7);
 	// Pin 13 is used to set living room light, analog input A0 is used to check light intensity from a photoresistor
-	photoresistor = new five.Sensor("A0");
+	photoresistor = new five.Sensor({
+		pin: "A0",
+		freq: 250
+	});
 	living_room_light_pin_led = new five.Led(13);
 	living_room_light_pin_led.off();
 	// Check if photoresistor gets less than a half of light available and change living room light if applicable
-	photoresistor.on('change', function() {
-		if((this.scaleTo([0, 100]) < 60 ) && !security){
+	photoresistor.on('data', function() {
+		//console.log(this.scaleTo([0, 100]));
+		if((this.scaleTo([0, 100]) < 60) && !security){
 			living_room_light = !living_room_light;
 			living_room_light_pin_led.on();
-			io.sockets.emit('photoresistor-change');
-			//console.log('photoresistor-change');
+			io.sockets.emit('photoresistor-on');
+			
+		}
+		if((this.scaleTo([0, 100]) > 11) && !security) {
+			living_room_light = !living_room_light;
+			living_room_light_pin_led.off();
+			io.sockets.emit('photoresistor-off');
 		}
 	});
 	// Changes living room light when pushbutton is pushed

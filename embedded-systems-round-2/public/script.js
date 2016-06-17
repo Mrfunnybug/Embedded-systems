@@ -91,7 +91,19 @@ $(function() {
       $(".modal-body").text(message);
     });
 ///// I need to change this to handle the photoresistor only once per state /////
-    socket.on('photoresistor-change', function() { changeBtnState("#living-room-btn", "#living-room-light") });
+    socket.on('photoresistor-on', function() { 
+      $("#living-room-btn").removeClass("btn-danger");
+      $("#living-room-btn").addClass("btn-success");
+      $("#living-room-btn").text("Trun off");
+      $("#living-room-light").val("On");
+    });
+    socket.on("photoresistor-off", function() {
+      $("#living-room-btn").removeClass("btn-success");
+      $("#living-room-btn").addClass("btn-danger");
+      $("#living-room-btn").text("Trun on");
+      $("#living-room-light").val("Off");
+    });
+
     socket.on('other-rooms-change', function() { changeBtnState("#other-rooms-btn", "#other-rooms-light") })
     // One function to rule them all, well, the UI buttons...
     // btn: the button id to change ------ input: the input id to change
