@@ -11,7 +11,7 @@ $(function() {
         $( "#amount" ).val( ui.value );
         // Send the event to the server with the name and value of it
         socket.emit('dimmable-led', ui.value);
-        console.log("Slider value: " + ui.value);
+        //console.log("Slider value: " + ui.value);
       }
     });
     $( "#amount" ).val( $( "#slider-range-max" ).slider( "value" ) );
@@ -19,12 +19,12 @@ $(function() {
     $("#living-room-btn").click(function() {
       changeBtnState("#living-room-btn", "#living-room-light");
       socket.emit('living-room-light', $("#living-room-light").val());
-      console.log($("#living-room-btn").val());
+      //console.log($("#living-room-btn").val());
     });
     $("#other-rooms-btn").click(function() {
       changeBtnState("#other-rooms-btn", "#other-rooms-light");
       socket.emit('other-rooms-lights', $("#other-rooms-light").val());
-      console.log($("#other-rooms-btn").val());
+      //console.log($("#other-rooms-btn").val());
     });
     // Checks for events sent from arduino to change the living room or every other rooms because of a pushbutton or photoresistor
     socket.on('living-room-light-pushbutton', function() { changeBtnState("#living-room-btn", "#living-room-light") });
@@ -44,10 +44,21 @@ $(function() {
         $("#people").val(function(i, oldValue) {
           return ++oldValue;
         });
+        //console.log("iiinnn")
       }
       else if(value === 'out') {
         $("#people").val(function(i, oldValue) {
-          return --oldValue;
+          if(oldValue > 1) {
+            socket.emit('security');
+            return --oldValue;
+          }
+          else if(oldValue > 0) {
+            return --oldValue;
+          }
+          else {
+            socket.emit('corrupted-security');
+            return oldValue;
+          }
         });
       }
       
@@ -75,7 +86,7 @@ $(function() {
         $(btn).addClass(newBtnClass);
         
         $(btn).text("Turn " + text);
-        console.log(btn + " is " + state);
+        //console.log(btn + " is " + state);
         $(input).val(state);
     }
   });

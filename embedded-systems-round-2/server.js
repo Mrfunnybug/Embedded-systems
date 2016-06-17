@@ -49,6 +49,38 @@ io.sockets.on('connection', function(socket) {
 			other_rooms_light_pin_led.toggle();
 			console.log("wtf");
 		});
+
+	// Corrupted security!
+		socket.on('corrupted-security', function() {
+			for(var i = 0; i < 10; i++){
+				piezo.play({
+				    // song is composed by an array of pairs of notes and beats
+				    // The first argument is the note (null means "no note")
+				    // The second argument is the length of time (beat) of the note (or non-note)
+				    song: [
+				      ["C4", 1 / 4],
+				      ["D4", 1 / 4],
+				      ["F4", 1 / 4],
+				      ["D4", 1 / 4],
+				      ["A4", 1 / 4],
+				      [null, 1 / 4],
+				      ["A4", 1],
+				      ["G4", 1],
+				      [null, 1 / 2],
+				      ["C4", 1 / 4],
+				      ["D4", 1 / 4],
+				      ["F4", 1 / 4],
+				      ["D4", 1 / 4],
+				      ["G4", 1 / 4],
+				      [null, 1 / 4],
+				      ["G4", 1],
+				      ["F4", 1],
+				      [null, 1 / 2]
+				    ],
+				    tempo: 100
+				  });
+			}
+		});
 });
 
 // Setting up johnny-five
@@ -62,7 +94,7 @@ var living_room_light_pin_led, other_rooms_light_pin_led, fan_pin,	dimmable_led;
 var backyard_light_pin;				// Relay pin
 var photoresistor;					// Light sensor
 var temperature, people_counter, front_door;						// Tmp and infrared sensors
-var previous_ppl_value_in = previous_ppl_value_out = 4444444;
+var piezo;
 
 //////////////////////////////// BOARD ////////////////////////////////
 arduino.on("ready", function() {
@@ -79,7 +111,7 @@ arduino.on("ready", function() {
 	// living_room_light_pin_led.off();
 	// // Check if photoresistor gets less than a half of light available and change living room light if applicable
 	// photoresistor.on('change', function() {
-	// 	if(this.scaleTo([0, 100]) < 60){
+	// 	if(this.scaleTo([0, 100]) < 60 ){
 	// 		living_room_light = !living_room_light;
 	// 		living_room_light_pin_led.on();
 	// 		io.sockets.emit('photoresistor-change');
@@ -109,32 +141,32 @@ arduino.on("ready", function() {
 
   //////////////////////////////// FAN CONTROLLING WITH TEMPERATURE MEASURING ////////////////////////////////
 	// Temperature will be measured with a TMP36 sensor
-	temperature = new five.Thermometer({
-		controller: "TMP36",
-		pin: "A1",
-		freq: 2000
-	});
-	// TIP42 transistor is attached to pin 5
-	fan_pin = new five.Pin(5);
-	// Whenever temperature provided by LM35 sensor is greater than 22° C the fan input changes its value to 'high' and when temperature is less or equal to 22° C it goes 'low'
-	temperature.on("data", function () {
-		io.sockets.emit('temperature', this.celsius.toFixed(2));
-			//console.log('temperature: ' + this.celsius.toFixed(2));
-		if(this.celsius > 24.00) {
-			if(fan) {
-				fan_pin.high();
-				fan = !fan;
-				//console.log("Temperature is: "+this.celsius.toFixed(2)+", fan is on");
-			}
-		}
-		else if(this.celsius < 24.00) {
-			if(!fan) {
-				fan_pin.low();
-				fan = !fan;
-				//console.log("Temperature is: "+this.celsius.toFixed(2)+", fan is off");
-			}
-		}
-	});
+	// temperature = new five.Thermometer({
+	// 	controller: "TMP36",
+	// 	pin: "A1",
+	// 	freq: 2000
+	// });
+	// // TIP42 transistor is attached to pin 5
+	// fan_pin = new five.Pin(5);
+	// // Whenever temperature provided by LM35 sensor is greater than 22° C the fan input changes its value to 'high' and when temperature is less or equal to 22° C it goes 'low'
+	// temperature.on("data", function () {
+	// 	io.sockets.emit('temperature', this.celsius.toFixed(2));
+	// 		//console.log('temperature: ' + this.celsius.toFixed(2));
+	// 	if(this.celsius > 24.00) {
+	// 		if(fan) {
+	// 			fan_pin.high();
+	// 			fan = !fan;
+	// 			//console.log("Temperature is: "+this.celsius.toFixed(2)+", fan is on");
+	// 		}
+	// 	}
+	// 	else if(this.celsius < 24.00) {
+	// 		if(!fan) {
+	// 			fan_pin.low();
+	// 			fan = !fan;
+	// 			//console.log("Temperature is: "+this.celsius.toFixed(2)+", fan is off");
+	// 		}
+	// 	}
+	// });
 
  //  //////////////////////////////// BACKYARD LIGHT ////////////////////////////////
 	// backyard_light_button = new five.Button(8);
@@ -158,23 +190,21 @@ arduino.on("ready", function() {
 ////////////////////// INFRARED //////////////////////////
 	people_counter = new five.IR.Reflect.Array({
 		emitter: 10,
-		pins: ["A2","A3"],
+		pins: ["A2","A5"],
 		freq: 500
 	}).enable();
 
 
 	people_counter.on("data", function() {
-		if(this.raw[0] < 4) {
+		if(this.raw[0] < 18) {
 			io.sockets.emit('people', 'in');
-			console.log("IN " + this.raw[0]);
+			//console.log("IN " + this.raw[0]);
 		}
-		if(this.raw[1] < 4) {
+		if(this.raw[1] < 18) {
 			io.sockets.emit('people', 'out');
-			console.log("OUT " + this.raw[1]);
+			//console.log("OUT " + this.raw[1]);
 		}
 	});
-});
 
-function security() {
-	// body...
-}
+	piezo = new five.Piezo(3);
+});
