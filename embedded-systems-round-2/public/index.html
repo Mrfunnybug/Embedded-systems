@@ -19,6 +19,22 @@
   	<script src="script.js"></script>
 </head>
 <body>
+	<div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+	  <div class="modal-dialog" role="document">
+	    <div class="modal-content">
+	      <div class="modal-header">
+	        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+	        <h1 class="modal-title" id="myModalLabel">Security alarm has been activated due to the following</h1>
+	      </div>
+	      <div class="modal-body">
+	        
+	      </div>
+	      <div class="modal-footer">
+	        <button type="button" class="btn btn-warning" data-dismiss="modal" id="disable-alarm-btn">Disable alarm</button>
+	      </div>
+	    </div>
+	  </div>
+	</div>
 	<nav class="navbar navbar-default navbar-fixed-top">
 	  <div class="container">
 	    <div class="nav-header">
@@ -34,13 +50,16 @@
 	</nav>
 	<div class="container">
 		<div class="row">
-			<div class="col-md-6">
+			<div class="col-md-4">
 				<h1>Second period</h1>
 			</div>
-			<div class="col-md-6 text-right">
+			<div class="col-md-4">
+				<button type="button" class="btn btn-success" id="security-btn"><h4>Turn <data>on</data> security alarm</h4></button>
+			</div>
+			<div class="col-md-4 center">
 				<h1>
-					<label for="people">People in the house:</label>
-					<input class="text-right" type="text" id="people" readonly style="border:0; color:#f6931f; font-weight:bold; margin: 20px" value="0">
+					<label for="people" class="text-right">People in the house:</label>
+					<input class="text-center" type="text" id="people" readonly style="border:0; color:#f6931f; font-weight:bold; margin: 20px" value="0">
 				</h1>
 			</div>
 		</div>
@@ -74,7 +93,7 @@
 
 		<p>
 			<div>
-				<label for="backyard-light">All other rooms lights are: </label>
+				<label for="backyard-light">Backyard light is: </label>
 				<input type="text" id="backyard-light" readonly style="border:0; color:#f6931f; font-weight:bold; margin: 20px" value="Off">
 			</div>
 		</p>

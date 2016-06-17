@@ -1,20 +1,20 @@
 $(function() {
   var socket = io.connect("http://localhost:3000");
     // Slider with jQuery UI
-    $( "#slider-range-max" ).slider({
-      range: "max",
-      min: 0,
-      max: 255,
-      value: 0,
-      slide: function( event, ui ) {
-        // Assign the slider value to the dimmable-led input
-        $( "#amount" ).val( ui.value );
-        // Send the event to the server with the name and value of it
-        socket.emit('dimmable-led', ui.value);
-        //console.log("Slider value: " + ui.value);
-      }
-    });
-    $( "#amount" ).val( $( "#slider-range-max" ).slider( "value" ) );
+    // $( "#slider-range-max" ).slider({
+    //   range: "max",
+    //   min: 0,
+    //   max: 255,
+    //   value: 0,
+    //   slide: function( event, ui ) {
+    //     // Assign the slider value to the dimmable-led input
+    //     $( "#amount" ).val( ui.value );
+    //     // Send the event to the server with the name and value of it
+    //     socket.emit('dimmable-led', ui.value);
+    //     //console.log("Slider value: " + ui.value);
+    //   }
+    // });
+    // $( "#amount" ).val( $( "#slider-range-max" ).slider( "value" ) );
     // Both this and the next ( $("#other-rooms-btn").click() ) change the calling action button state and emit the event via socket
     $("#living-room-btn").click(function() {
       changeBtnState("#living-room-btn", "#living-room-light");
@@ -57,11 +57,38 @@ $(function() {
           }
           else {
             socket.emit('corrupted-security');
+            //console.log("security");
             return oldValue;
           }
         });
       }
       
+    });
+
+    $("#security-btn").click(function() {
+      socket.emit("security-change", $("data").text());
+      if($("data").text() == "on") {
+        $("data").text("off");
+        $(this).removeClass("btn-success");
+        $(this).addClass("btn-danger");
+      }
+      else {
+        $("data").text("on");
+        $(this).removeClass("btn-danger");
+        $(this).addClass("btn-success");
+      }
+    });
+
+    $("#disable-alarm-btn").click(function() {
+      socket.emit("security-change", "off");
+      $("data").text("on");
+      $("#security-btn").removeClass("btn-danger");
+      $("#security-btn").addClass("btn-success");
+    })
+
+    socket.on("corrupted-security", function(message) {
+      $("#myModal").modal('show');
+      $(".modal-body").text(message);
     });
 ///// I need to change this to handle the photoresistor only once per state /////
     socket.on('photoresistor-change', function() { changeBtnState("#living-room-btn", "#living-room-light") });

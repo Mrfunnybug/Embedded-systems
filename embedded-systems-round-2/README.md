@@ -2,18 +2,20 @@
 
 To check it out you need to have an arduino (UNO used during development) whit the following pins attached to: 
 
-| PIN | COMPONENT 				   |
-|-----|----------------------------|
-|2	  |push_button (living room)   |
-|4	  |push_button (other rooms)   |
-|5	  |transistor (for a fan)      |
-|6	  |LED (dimmable LED)		   |
-|8	  |push_button (backyard)	   |
-|9	  |relay (backyard bulb)	   |
-|12	  |LED (other rooms)		   |
-|13   |LED (living room)		   |
-|A0	  |photoresistor (living room) |
-|A1   |TMP36 (can be changed) 	   |
+| PIN 	  | COMPONENT 				   |
+|---------|----------------------------|
+|4	  	  |push_button (other rooms)   |
+|6	  	  |LED (dimmable LED)		   |
+|7	  	  |push_button (living room)   |
+|8	  	  |push_button (backyard)	   |
+|9	  	  |relay (backyard bulb)	   |
+|11	  	  |transistor (for a fan)      |
+|12	  	  |LED (other rooms)		   |
+|13   	  |LED (living room)		   |
+|A0	 	  |photoresistor (living room) |
+|A1  	  |TMP36 (can be changed) 	   |
+|A2 and A5|IR sensors (people counter) |
+|5v		  |IR light emitter			   |
 
 And then...
 
